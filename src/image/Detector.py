@@ -34,17 +34,19 @@ class Detector:
 
         self.image = np.array(arraytest).astype(np.uint8)
 
-    def wave(self, x, y):
+    def wave(self, x, y, width, height):
         """
         Najde a oznaci jednu kouli
         :param x: souradnice bodu, ktery patri kouli
         :param y: souradnice bodu, ktery patri kouli
+        :param width: sirka obrazku
+        :param height: vyska obrazku
         :return: souradnice obalky, ve ktere lezi koule
         """
         max_x = 0
-        min_x = 1000000000000000
+        min_x = width
         max_y = 0
-        min_y = 1000000000000000
+        min_y = height
 
         queue = [[x, y]]
 
@@ -69,16 +71,16 @@ class Detector:
 
         return dict(max_x=max_x, min_x=min_x, max_y=max_y, min_y=min_y)
 
-    def copy_ball(self, **kvargs):
+    def copy_ball(self, **kwargs):
         """
         Vrati 2D pole bool hodnot koule,
         :param kvargs:
         :return:
         """
-        xx = kvargs['min_x']
-        XX = kvargs['max_x']
-        yy = kvargs['min_y']
-        YY = kvargs['max_y']
+        xx = kwargs['min_x']
+        XX = kwargs['max_x']
+        yy = kwargs['min_y']
+        YY = kwargs['max_y']
         ball = []
         for _ in range(xx - 1, XX):
             ball.append([150] * ((YY - yy) + 1))        # TODO
@@ -90,7 +92,7 @@ class Detector:
                         ball[x - xx][y - yy] = True
                     self.image[x][y] = self.pixel_type['visited']
 
-        # io.show_image(Image.fromarray(np.array(ball).astype(np.uint8), mode='L'))
+        io.show_image(Image.fromarray(np.array(ball).astype(np.uint8), mode='L'))
         return ball
 
     def is_border(self, x, y):
@@ -112,8 +114,10 @@ class Detector:
         :return: pole 2D poli kouli
         """
         balls = []
-        for x in range(len(self.image)):
-            for y in range(len(self.image[0])):
+        width = len(self.image)
+        height = len(self.image[0])
+        for x in range(width):
+            for y in range(height):
                 if self.image[x][y] == self.pixel_type['ball']:
-                    balls.append(self.copy_ball(**self.wave(x, y)))
+                    balls.append(self.copy_ball(**self.wave(x, y, width, height)))
         return balls
