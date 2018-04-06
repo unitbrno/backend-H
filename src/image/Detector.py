@@ -73,6 +73,10 @@ class Detector:
             max_y = max(max_y, pixel_y)
             min_y = min(min_y, pixel_y)
 
+        # removes small objects
+        if max_x - min_x <= 10 or max_y - min_y <= 10:
+            max_x = width
+
         return dict(max_x=max_x, min_x=min_x, max_y=max_y, min_y=min_y)
 
     def copy_ball(self, **kwargs):
@@ -96,7 +100,7 @@ class Detector:
                         ball[x - xx][y - yy] = True
                     self.image[x][y] = self.pixel_type['visited']
 
-        io.show_image(Image.fromarray(np.array(ball).astype(np.uint8), mode='L'))
+        # io.show_image(Image.fromarray(np.array(ball).astype(np.uint8), mode='L'))
         return ball
 
     def is_border(self, x, y, width, height):
