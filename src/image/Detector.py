@@ -72,8 +72,8 @@ class Detector:
         yy = kvargs['min_y']
         YY = kvargs['max_y']
         ball = []
-        for _ in range(XX - 1):
-            ball.append([False] * (YY - 1))
+        for _ in range(xx - 1, XX):
+            ball.append([150] * ((YY - yy) + 1))
 
         for x in range(xx, XX + 1):
             for y in range(yy, YY + 1):
@@ -82,7 +82,7 @@ class Detector:
                         ball[x - xx][y - yy] = True
                     self.image[x][y] = self.pixel_type['visited']
 
-        # io.show_image(Image.fromarray(np.array(ball).astype(np.uint8), mode='L'))
+        io.show_image(Image.fromarray(np.array(ball).astype(np.uint8), mode='L'))
         return ball
 
     def is_border(self, x, y):
