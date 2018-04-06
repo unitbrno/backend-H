@@ -7,7 +7,7 @@ Usage examples:
     obj = load_image("../../tests/1/field/0.tif")
     show_image(obj)
     2)
-    vector = get_image_vector("../data/obj.tif")
+    vector = get_image_vector("../data/obj.tif", load=True)
 """
 
 
