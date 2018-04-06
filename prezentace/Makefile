@@ -1,4 +1,4 @@
-filename = proj5
+filename = prezentace
 make:
 	latex ${filename}.tex
 	latex ${filename}.tex
