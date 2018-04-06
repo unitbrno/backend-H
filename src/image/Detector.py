@@ -78,15 +78,15 @@ class Detector:
     def copy_ball(self, **kwargs):
         """
         Vrati 2D pole bool hodnot koule,
-        :param kvargs:
-        :return:
+        :param kvargs: minimalni/maximalni hranice
+        :return: 2D pole bool hodnot, True pro okraje
         """
         xx = kwargs['min_x']
         XX = kwargs['max_x']
         yy = kwargs['min_y']
         YY = kwargs['max_y']
         ball = []
-        for _ in range(xx - 1, XX):
+        for _ in range(xx, XX + 1):
             ball.append([150] * ((YY - yy) + 1))        # TODO
 
         for x in range(xx, XX + 1):
@@ -96,7 +96,7 @@ class Detector:
                         ball[x - xx][y - yy] = True
                     self.image[x][y] = self.pixel_type['visited']
 
-        # io.show_image(Image.fromarray(np.array(ball).astype(np.uint8), mode='L'))
+        io.show_image(Image.fromarray(np.array(ball).astype(np.uint8), mode='L'))
         return ball
 
     def is_border(self, x, y, width, height):
@@ -106,12 +106,13 @@ class Detector:
         :param y: souradnice bodu, ktery patri kouli
         :param width: sirka obrazku
         :param height: vyska obrazku
-        :return:
+        :return: True, pokud je hranicni bod
         """
-        return x + 1 < width and self.image[x + 1][y] == self.pixel_type['background'] or \
+        return x < width and self.image[x + 1][y] == self.pixel_type['background'] or \
                x > 0 and self.image[x - 1][y] == self.pixel_type['background'] or \
-               y + 1 <  height and self.image[x][y + 1] == self.pixel_type['background'] or \
-               y > 0 and self.image[x][y - 1] == self.pixel_type['background']
+               y < height and self.image[x][y + 1] == self.pixel_type['background'] or \
+               y > 0 and self.image[x][y - 1] == self.pixel_type['background'] or \
+               x == width or y == height
 
     @property
     def balls(self):
@@ -126,6 +127,6 @@ class Detector:
             for y in range(height):
                 if self.image[x][y] == self.pixel_type['ball']:
                     dct = self.wave(x, y, width, height)
-                    if dct['max_x'] != width and dct['min_x'] != 0 and dct['max_y'] != height and dct['min_y'] != 0:
+                    if dct['max_x'] + 1 < width and dct['min_x'] > 0 and dct['max_y'] + 1 < height and dct['min_y'] > 0:
                         balls.append(self.copy_ball(**dct))
         return balls
