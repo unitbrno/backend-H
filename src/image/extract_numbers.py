@@ -8,6 +8,7 @@ About: Module that extracts output information
 
 
 import math
+from src.image.Detector import Detector
 from src.core.io import get_image_vector
 
 
@@ -65,7 +66,7 @@ def putpixel(x, y, matrix, abs_vector):
         b_point_2 = (x-abs_vector[0], y-abs_vector[1])
 
         points = get_normal_max(matrix, b_point_1, b_point_2)
-
+        print(points)
         i = 0
         j = 0
         lengths = []
@@ -164,7 +165,7 @@ def get_normal_max(sphere, point1, point2):
         if ret is not None:
             state = ret[0]
             points.append(ret[1])
-        return
+        return []
     dx = x2 - x1
     dy = y2 - y1
     k = dy / dx
@@ -184,17 +185,12 @@ def get_normal_max(sphere, point1, point2):
     return points
 
 
-matrix = get_image_vector("../../tests/1/particles/00002.bmp", load=True)
-p1, p2 = get_max_width(matrix)
-p1 = (168, 73)
-p2 = (1, 67)
-length = get_thickness(matrix, p1, p2)
-print(length)
+matrixes = get_image_vector("../../tests/1/field/0.tif", load=True)
+dec = Detector(matrixes)
 
-'''
-for matrix in testing_matrix:
-    print(get_height(matrix))
-    print(get_width(matrix))
+i = 1
+for matrix in dec.balls:
     p1, p2 = get_max_width(matrix)
-    print(get_thickness(matrix, p1, p2))
-'''
+    length = get_thickness(matrix, p1, p2)
+    print(i, "->", math.sqrt((p2[0]-p1[0])**2 + (p2[1]-p1[1])**2), "->", length)
+    i += 1
