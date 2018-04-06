@@ -89,7 +89,7 @@ class Detector:
                     if self.is_border(x, y):
                         ball[x - xx][y - yy] = True
                     self.image[x][y] = self.pixel_type['visited']
-        #io.show_image(Image.fromarray(np.array(ball).astype(np.uint8), mode='L'))
+        io.show_image(Image.fromarray(np.array(ball).astype(np.uint8), mode='L'))
         return ball
 
     def is_border(self, x, y):

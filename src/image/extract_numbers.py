@@ -36,25 +36,53 @@ def get_max_width(sphere):
     y_min = 0
     y_max = 0
 
+    true_vector = []
     for i in range(len(sphere)):
         for j in range(len(sphere[0])):
+            if sphere[i][j] == True:
+                true_vector.append((i,j))
+
+    max_dist = 0
+    x_min = 0
+    x_max = 0
+    y_min = 0
+    y_max = 0
+    i = 0
+    j = 0
+
+    #print(len(true_vector))
+    for i in range(0, len(true_vector), 5):
+        for j in range(i+1, len(true_vector), 5):
+            length = math.sqrt((true_vector[i][0] - true_vector[j][0])**2 + (true_vector[i][1] - true_vector[j][1])**2)
+            if length > max_dist:
+                max_dist = length
+                x_min = true_vector[i][0]
+                y_min = true_vector[i][1]
+                x_max = true_vector[j][0]
+                y_max = true_vector[j][1]
+    return max_dist, (x_min, y_min), (x_max, y_max)
+
+    '''        
+    true_vector = []
+    for i in range(len(sphere)):
+        for j in range(len(sphere[0])):
+            print(i,j)
             x,y = i,j
             max_dist = 0
             if sphere[x][y]:
-                for i2 in range(i+1):
-                    for j2 in range(j+1):
+                for i2 in range(i, get_height(sphere)):
+                    for j2 in range(get_width(sphere)):
                         if sphere[i2][j2]:
                             length = math.sqrt((i2-i)**2 + (j2-j)**2)
-                            if length>max_dist:
+                            if length > max_dist:
                                 max_dist = length
                                 x_min = i
                                 y_min = j
                                 x_max = i2
                                 y_max = j2
                 total_max = max(total_max, max_dist)
-
     return (x_min, y_min), (x_max, y_max)
-
+    '''
 
 def putpixel(x, y, matrix, abs_vector):
 
@@ -66,7 +94,7 @@ def putpixel(x, y, matrix, abs_vector):
         b_point_2 = (x-abs_vector[0], y-abs_vector[1])
 
         points = get_normal_max(matrix, b_point_1, b_point_2)
-        print(points)
+        #print(points)
         i = 0
         j = 0
         lengths = []
@@ -181,16 +209,18 @@ def get_normal_max(sphere, point1, point2):
                 state = ret[0]
                 points.append(ret[1])
             y += k
-
     return points
 
 
 matrixes = get_image_vector("../../tests/1/field/0.tif", load=True)
 dec = Detector(matrixes)
 
+
 i = 1
 for matrix in dec.balls:
-    p1, p2 = get_max_width(matrix)
+    width = get_width(matrix)
+    height = get_height(matrix)
+    dist, p1, p2 = get_max_width(matrix)
     length = get_thickness(matrix, p1, p2)
-    print(i, "->", math.sqrt((p2[0]-p1[0])**2 + (p2[1]-p1[1])**2), "->", length)
+    print(width, height, dist, length)
     i += 1
