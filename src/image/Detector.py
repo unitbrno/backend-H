@@ -29,7 +29,7 @@ class Detector:
         for row in self.image:
             new_row = list()
             for val in row:
-                new_row.append(255) if val > thr_val * 1.3 else new_row.append(0)
+                new_row.append(255) if val > thr_val * 1.2 else new_row.append(0)
             arraytest.append(new_row)
 
         self.image = np.array(arraytest).astype(np.uint8)
@@ -95,7 +95,7 @@ class Detector:
                     if self.is_border(x, y, XX, YY):
                         ball[x - xx][y - yy] = True
                     self.image[x][y] = self.pixel_type['visited']
-        io.show_image(Image.fromarray(np.array(ball).astype(np.uint8), mode='L'))
+        #io.show_image(Image.fromarray(np.array(ball).astype(np.uint8), mode='L'))
         return ball
 
     def is_border(self, x, y, width, height):
