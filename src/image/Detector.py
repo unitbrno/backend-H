@@ -1,38 +1,93 @@
 import numpy as np
 import src.core.io as io
 from PIL import Image
-from operator import itemgetter
-
+from src.image.thresholding import Threshold
 
 class Detector:
 
-    pixel_type = dict(ball=255, background=0, actual=100, visited=200)
+    pixel_type = dict(ball=255, background=0, actual=100, visited=200, gray=128, selected=10)
 
     def __init__(self, image_vector):
-        self.image = image_vector
-        self.threshold()
+        self.image = Threshold(image_vector).get_image()
+        # io.show_image(Image.fromarray(self.image))
+        self.solve_gray()
+        # io.show_image(Image.fromarray(self.image))
 
-    def threshold(self):
-        histogram = [0] * 256
-        for row in self.image:
-            for val in row:
-                histogram[val] += 1
+    def solve_gray(self):
+        width = len(self.image)
+        height = len(self.image[0])
+        for x in range(width):
+            for y in range(height):
+                if self.image[x][y] == self.pixel_type['gray']:
+                    self.balance(x, y, width, height)
 
-        index, value = max(enumerate(histogram), key=itemgetter(1))
-        thr_val = 0
-        for i in range(index + 1, len(histogram)):
-            if histogram[i] / histogram[i - 1] > 0.8:
-                thr_val = i
-                break
+    def balance(self, x, y, width, height):
+        white_counter = 0
+        black_counter = 0
 
-        arraytest = list()
-        for row in self.image:
-            new_row = list()
-            for val in row:
-                new_row.append(255) if val > thr_val * 1.2 else new_row.append(0)
-            arraytest.append(new_row)
+        queue = [[x, y]]
 
-        self.image = np.array(arraytest).astype(np.uint8)
+        while queue:
+            front = queue.pop(0)
+            pixel_x = front[0]
+            pixel_y = front[1]
+            if self.image[pixel_x][pixel_y] != self.pixel_type['gray']:
+                continue
+
+            self.image[pixel_x][pixel_y] = self.pixel_type['selected']
+
+            if pixel_x + 1 < width:
+                if self.image[pixel_x + 1][pixel_y] == self.pixel_type['ball']:
+                    white_counter += 1
+                elif self.image[pixel_x + 1][pixel_y] == self.pixel_type['background']:
+                    black_counter += 1
+            if pixel_x > 0:
+                if self.image[pixel_x - 1][pixel_y] == self.pixel_type['ball']:
+                    white_counter += 1
+                elif self.image[pixel_x - 1][pixel_y] == self.pixel_type['background']:
+                    black_counter += 1
+            if pixel_y + 1 < height:
+                if self.image[pixel_x][pixel_y + 1] == self.pixel_type['ball']:
+                    white_counter += 1
+                elif self.image[pixel_x][pixel_y + 1] == self.pixel_type['background']:
+                    black_counter += 1
+            if pixel_y > 0:
+                if self.image[pixel_x][pixel_y - 1] == self.pixel_type['ball']:
+                    white_counter += 1
+                elif self.image[pixel_x][pixel_y - 1] == self.pixel_type['background']:
+                    black_counter += 1
+
+            if pixel_x + 1 < width:
+                queue.append([pixel_x + 1, pixel_y])
+            if pixel_x > 0:
+                queue.append([pixel_x - 1, pixel_y])
+            if pixel_y + 1 < height:
+                queue.append([pixel_x, pixel_y + 1])
+            if pixel_y > 0:
+                queue.append([pixel_x, pixel_y - 1])
+
+        color = self.pixel_type['background']
+        if white_counter > black_counter * 0.7:
+            color = self.pixel_type['ball']
+
+        queue = [[x, y]]
+        while queue:
+            front = queue.pop(0)
+            pixel_x = front[0]
+            pixel_y = front[1]
+            if self.image[pixel_x][pixel_y] != self.pixel_type['selected']:
+                continue
+
+            self.image[pixel_x][pixel_y] = color
+
+            if pixel_x + 1 < width:
+                queue.append([pixel_x + 1, pixel_y])
+            if pixel_x > 0:
+                queue.append([pixel_x - 1, pixel_y])
+            if pixel_y + 1 < height:
+                queue.append([pixel_x, pixel_y + 1])
+            if pixel_y > 0:
+                queue.append([pixel_x, pixel_y - 1])
 
     def wave(self, x, y, width, height):
         """
