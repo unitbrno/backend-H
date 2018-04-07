@@ -41,7 +41,7 @@ class Threshold(object):
                 last_val = 255 - index
                 break
 
-        self.coefficient = 0.5
+        self.coefficient = 0.6
         size = last_val - first_val
         middle = round(first_val + size * self.coefficient)
         step = 255 / size
