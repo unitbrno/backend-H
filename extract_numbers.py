@@ -11,6 +11,7 @@ import math
 from src.image.Detector import Detector
 from src.core.io import get_image_vector, write_to_csv
 from src.core.args import get_path_csv, get_path_img
+from src.testing.compare import compare_files
 
 
 def get_width(sphere):
@@ -232,7 +233,7 @@ def get_normal_points(sphere, point1, point2):
 
 
 # main program
-
+'''
 tiff_filename = get_path_img()
 csv_filename = get_path_csv()
 
@@ -253,3 +254,36 @@ for matrix in dec.balls:
         i += 1
 
 write_to_csv(results, csv_filename)
+compare_files(csv_filename, "tests/1/particles.csv")
+'''
+
+total_error = 0
+
+for iter_i in range(1,10):
+    if iter_i == 4:
+        continue
+    test_name = "tests/"+str(iter_i)+"/field/0.tif"
+    result_name = "tests/"+str(iter_i)+"/particles.csv"
+    csv_filename = "res.csv"
+
+    matrixes = get_image_vector(test_name, load=True)
+    dec = Detector(matrixes)
+
+    i = 1
+    results = []
+    for matrix in dec.balls:
+        width = get_width(matrix)
+        height = get_height(matrix)
+        if width * height > 100:
+            dist, p1, p2 = get_max_width(matrix)
+            length = get_thickness(matrix, p1, p2)
+            dist = round(dist, 3)
+            length = round(length, 3)
+            results.append([i, width, height, dist, length])
+            i += 1
+
+    write_to_csv(results, csv_filename)
+    total_error += compare_files(csv_filename, result_name, iter_i)
+
+print("\nTOTAL ERROR {}: ".format(i), total_error)
+
