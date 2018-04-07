@@ -32,7 +32,7 @@ class Threshold(object):
                 last_val = 255 - index
                 break
 
-        self.coefficient = 0.75
+        self.coefficient = 0.5
         size = last_val - first_val
         middle = round(first_val + size * self.coefficient)
         step = 255 / size
@@ -50,8 +50,8 @@ class Threshold(object):
 
     def get_image(self):
         arraytest = list()
-        max_black = self.histogram[70]
-        min_white = self.histogram[100]
+        max_black = self.histogram[45]
+        min_white = self.histogram[90]
 
         for x, row in enumerate(self.array):
             new_row = list()

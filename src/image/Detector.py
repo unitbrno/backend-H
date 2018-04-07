@@ -15,9 +15,9 @@ class Detector:
             exit(1)
         self.width = len(self.image)
         self.height = len(self.image[0])
-        # io.show_image(Image.fromarray(self.image))
+        io.show_image(Image.fromarray(self.image))
         self.solve_gray()
-        # io.show_image(Image.fromarray(self.image))
+        io.show_image(Image.fromarray(self.image))
 
     def solve_gray(self):
         """
@@ -163,7 +163,7 @@ class Detector:
                     if self.is_border(x, y, max_x, max_y):
                         ball[x - min_x][y - min_y] = True
                     self.image[x][y] = self.pixel_type['visited']
-        #io.show_image(Image.fromarray(np.array(ball).astype(np.uint8), mode='L'))
+        # io.show_image(Image.fromarray(np.array(ball).astype(np.uint8), mode='L'))
         return ball
 
     def is_border(self, x, y, width, height):
