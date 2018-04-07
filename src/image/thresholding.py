@@ -1,7 +1,13 @@
-import src.core.io as io
-from PIL import Image
+"""
+Thresholding module
+Author: Halas Timotej
+About: Edits image and returns in form so Detector class can detect balls
+"""
+
+
 import numpy as np
 from operator import itemgetter
+
 
 class Threshold(object):
     array = None
@@ -9,6 +15,9 @@ class Threshold(object):
     histogram = None
 
     def __init__(self, array):
+        """
+        This method computes histogram and edit it so image have bigger contrast
+        """
         self.array = list(array)
         self.x_s = len(self.array[0])
         self.y_s = len(self.array)
@@ -32,7 +41,7 @@ class Threshold(object):
                 last_val = 255 - index
                 break
 
-        self.coefficient = 0.75
+        self.coefficient = 0.5
         size = last_val - first_val
         middle = round(first_val + size * self.coefficient)
         step = 255 / size
@@ -49,9 +58,16 @@ class Threshold(object):
             self.histogram[i] = round(last_value) if round(last_value) >= 0 else 0
 
     def get_image(self):
+        """
+        This method finds blacks and whites in picture and sets pixels to:
+        Black color 0% ossibility of ball
+        Grey color 50% possibility of ball
+        White color 100% possibility of ball
+        :return: Returns edited image
+        """
         arraytest = list()
-        max_black = self.histogram[70]
-        min_white = self.histogram[100]
+        max_black = self.histogram[45]
+        min_white = self.histogram[90]
 
         for x, row in enumerate(self.array):
             new_row = list()
@@ -66,10 +82,3 @@ class Threshold(object):
                     new_row.append(128)
             arraytest.append(new_row)
         return np.array(arraytest).astype(np.uint8)
-
-
-if __name__ == "__main__":
-    folder = "8"
-    obj = io.load_image("../../tests/" + folder + "/field/0.tif")
-    array = io.get_image_vector(obj)
-    io.show_image(Image.fromarray(Threshold(array).get_image(), mode='L'))

@@ -1,6 +1,10 @@
-import numpy as np
-import src.core.io as io
-from PIL import Image
+"""
+Detector module
+Author: Hanak Jiri
+About: Detect balls in image
+"""
+
+
 from src.image.thresholding import Threshold
 
 
@@ -15,14 +19,11 @@ class Detector:
             exit(1)
         self.width = len(self.image)
         self.height = len(self.image[0])
-        # io.show_image(Image.fromarray(self.image))
         self.solve_gray()
-        # io.show_image(Image.fromarray(self.image))
 
     def solve_gray(self):
         """
         Najde vsechny nerozhodne oblasti
-        :return:
         """
         for x in range(self.width):
             for y in range(self.height):
@@ -34,7 +35,6 @@ class Detector:
         Rozhodne nejiste oblasti
         :param start_x:
         :param start_y:
-        :return:
         """
         white_counter = 0
         black_counter = 0
@@ -155,7 +155,7 @@ class Detector:
         max_y = kwargs['max_y']
         ball = []
         for _ in range(min_x, max_x + 1):
-            ball.append([150] * ((max_y - min_y) + 1))        # TODO
+            ball.append([False] * ((max_y - min_y) + 1))
 
         for x in range(min_x, max_x + 1):
             for y in range(min_y, max_y + 1):
@@ -163,7 +163,6 @@ class Detector:
                     if self.is_border(x, y, max_x, max_y):
                         ball[x - min_x][y - min_y] = True
                     self.image[x][y] = self.pixel_type['visited']
-        #io.show_image(Image.fromarray(np.array(ball).astype(np.uint8), mode='L'))
         return ball
 
     def is_border(self, x, y, width, height):

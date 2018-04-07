@@ -7,6 +7,7 @@ About: Modules provide function to calculate general error of extractor
 
 import csv
 import numpy as np
+import os
 
 
 def compare_results(list1, list2):
@@ -29,6 +30,8 @@ def compare_files(filename1, filename2, ind):
     """
     total_error = 0
 
+    os.system("cat res.csv | wc -l")
+    os.system("cat tests/" + str(ind) + "/particles.csv | wc -l")
     with open(filename1, 'r') as csvfile, open(filename2, 'r') as csvfile2:
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
         spamreader2 = csv.reader(csvfile2, delimiter=',', quotechar='|')
@@ -38,7 +41,6 @@ def compare_files(filename1, filename2, ind):
                 counter += 1
                 continue
             total_error += compare_results(row1, row2)
-
     print("Total Error ", ind, ":", total_error, "\n")
     return total_error
 
